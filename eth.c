@@ -55,7 +55,8 @@ int eth_parse(uint8_t *buf, size_t len, struct eth_hdr *eth)
     eth->type = ntohs(eth->type);
 
     /* Data */
-    size_t data_len = (p-buf)-4;
+    //size_t data_len = (p-buf)-4;
+    size_t data_len = len - (p-buf-4);
     eth->data = malloc(data_len);
     if(eth->data == NULL) {
         return -1;
@@ -74,13 +75,23 @@ int eth_parse(uint8_t *buf, size_t len, struct eth_hdr *eth)
 
 void eth_print(struct eth_hdr *eth)
 {
+    char type[16];
+
+    switch(eth->type)
+    {
+        case ETHTYPE_IPV4:  snprintf(type, 16, "IPv4"); break;
+        case ETHTYPE_ARP:   snprintf(type, 16, "ARP");  break;
+        case ETHTYPE_IPV6:  snprintf(type, 16, "IPv6"); break;
+        default: snprintf(type, 16, "N/A");
+    }
+
     printf( "DMAC: %02X:%02X:%02X:%02X:%02X:%02X\n"     \
             "SMAC: %02X:%02X:%02X:%02X:%02X:%02X\n"     \
-            "Type: %04X (%d)\n"                         \
+            "Type: %04X (%s)\n"                         \
             " FCS: %08X (%d)\n",                        \
             eth->dmac[0], eth->dmac[1], eth->dmac[2],   \
             eth->dmac[3], eth->dmac[4], eth->dmac[5],   \
             eth->smac[0], eth->smac[1], eth->smac[2],   \
             eth->smac[3], eth->smac[4], eth->smac[5],   \
-            eth->type, eth->type, eth->fcs, eth->fcs);
+            eth->type, type, eth->fcs, eth->fcs);
 }
