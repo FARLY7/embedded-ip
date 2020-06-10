@@ -12,8 +12,22 @@
 #include <unistd.h>     /* close() */
 #include <stdlib.h>     /* free() */
 
-
 static char tap_name[IFNAMSIZ];
+
+
+
+
+static int handle_frame(struct eth_hdr *eth)
+{
+    switch(eth->type)
+    {
+        case ETHTYPE_IPV4:  ipv4_parse(eth->data); break;
+        case ETHTYPE_ARP:   arp_parse(eth->data);  break;
+        case ETHTYPE_IPV6:  ipv6_parse(eth->data); break;   
+    }
+    return 0;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -48,15 +62,18 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        if(eth_parse(buffer, nread, &eth) != -1)
-        {
-            /* Parsed Ethernet frame */
-            printf("\nRead %d bytes from device %s\n", nread, tap_name);
-            eth_print(&eth);
-            free(eth.data);
-        } else {
-            printf("Failed to parse eth frame\n");
+        if(eth_parse(buffer, nread, &eth) == -1) {
+            printf("Failed to parse Ethernet frame\n");
+            continue;
         }
+
+        /* Parsed Ethernet frame */
+        printf("\nRead %d bytes from device %s\n", nread, tap_name);
+        eth_print(&eth);
+
+        handle_frame(&eth);
+
+        free(eth.data);    
     }
 
     return 0;
