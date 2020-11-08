@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int eth_serialize(struct eth_hdr *eth, uint8_t *buf, size_t len)
+#include "frame.h"
+
+static int eth_serialize(struct eth_hdr *eth, uint8_t *buf, size_t len)
 {
     uint8_t *p = buf;
 
@@ -35,7 +37,7 @@ int eth_serialize(struct eth_hdr *eth, uint8_t *buf, size_t len)
     return (p - buf);
 }
 
-int eth_parse(uint8_t *buf, size_t len, struct eth_hdr *eth)
+static int eth_parse(uint8_t *buf, size_t len, struct eth_hdr *eth)
 {
     uint8_t *p = buf;
 
@@ -73,13 +75,26 @@ int eth_parse(uint8_t *buf, size_t len, struct eth_hdr *eth)
     return data_len;
 }
 
+static int handle_frame(struct eth_hdr *eth)
+{
+    switch(eth->type)
+    {
+        case ETHTYPE_IPV4:  ipv4_parse(eth->data); break;
+        case ETHTYPE_ARP:   arp_parse( eth->data); break;
+        case ETHTYPE_IPV6:  ipv6_parse(eth->data); break;   
+    }
+    return 0;
+}
+
+
+
 void eth_print(struct eth_hdr *eth)
 {
     char type[16];
 
     switch(eth->type)
     {
-        case ETHTYPE_IPV4:  snprintf(type, 16, "IPv4"); break;
+        case ETHTYPE_IP:    snprintf(type, 16, "IPv4"); break;
         case ETHTYPE_ARP:   snprintf(type, 16, "ARP");  break;
         case ETHTYPE_IPV6:  snprintf(type, 16, "IPv6"); break;
         default: snprintf(type, 16, "N/A");
@@ -94,4 +109,44 @@ void eth_print(struct eth_hdr *eth)
             eth->smac[0], eth->smac[1], eth->smac[2],   \
             eth->smac[3], eth->smac[4], eth->smac[5],   \
             eth->type, type, eth->fcs, eth->fcs);
+}
+
+
+int eth_input(struct pbuf *p)
+{
+    if(p->len < ETH_HDR_LEN) {
+        goto free_and_return;
+    }
+
+
+free_and_return:
+    free()
+}
+
+
+// int eth_alloc_frame(uint8_t *frame, size_t len) {
+//     frame_t *frame = frame_alloc(frame, frame_len, frame, ETH_HEADER_LEN, FRAME_TYPE_ETHERNET);
+// }
+
+static int eth_receive(frame_t *f)
+{
+    struct eth_hdr *hdr = (struct eth_hdr *) f->hdr;
+
+    if(hdr->proto == ETHTYPE_ARP) {
+        return arp_receive(f);
+    }
+
+    if(hdr->proto == ETHTYPE_IP) {
+        return ipv4_receive(f);
+    }
+
+    frame_discard(f);
+}
+
+
+
+
+int eth_output(struct pbuf *p, const struct eth_addr* src, const struct eth_addr* dst, u16_t eth_type)
+{
+
 }

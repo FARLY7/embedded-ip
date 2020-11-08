@@ -13,6 +13,13 @@ struct arp_hdr {
     uint8_t *data;
 };
 
+struct arp_ipv4 {
+    uint8_t smac[6];
+    uint32_t sip;
+    uint8_t dmac[6];
+    uint32_t dip;
+};
+
 int arp_parse(uint8_t *buf, size_t len, struct arp_hdr *arp);
 
 int arp_serialize(struct arp_hdr *arp, uint8_t *buf, size_t len);

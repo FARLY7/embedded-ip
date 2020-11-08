@@ -1,5 +1,12 @@
 #include "arp.h"
 
+/**
+ * @todo Add ARP table.
+ * 
+ * IP Adress, HW type, HW Address, Flags Mask, IFace.
+ */
+
+
 int arp_parse(uint8_t *buf, size_t len, struct arp_hdr *arp)
 {
     uint8_t *p = buf;
