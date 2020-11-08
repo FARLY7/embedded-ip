@@ -2,9 +2,9 @@
 
 #include <stdlib.h>
 
-frame_t* frame_alloc(uint8_t *frame, size_t frame_len, uint8_t *hdr, size_t hdr_len, frame_type_t type)
+struct frame* frame_alloc(uint8_t *frame, size_t frame_len, uint8_t *hdr, size_t hdr_len, frame_type_t type)
 {
-    frame_t *_frame = (frame_t*) malloc(frame_len);
+    struct frame *_frame = (struct frame*) malloc(frame_len);
 
     if(_frame == NULL) { 
         retun NULL;

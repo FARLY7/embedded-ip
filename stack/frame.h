@@ -4,8 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-typedef struct {
-
+struct frame {
     /* Start of the whole buffer, total frame length */
     uint8_t *buffer;
     size_t   buffer_len;
@@ -23,11 +22,10 @@ typedef struct {
 
     /* Pointer to the physical device this packet belongs to */
     //struct device *dev;
+};
 
-} frame_t;
+struct frame* frame_alloc(uint8_t *frame, size_t frame_len, uint8_t *hdr, size_t hdr_len, frame_type_t type);
 
-frame_t* frame_alloc(uint8_t *frame, size_t frame_len, uint8_t *hdr, size_t hdr_len, frame_type_t type);
-
-void frame_free(frame_t *frame);
+void frame_free(struct frame *frame);
 
 #endif

@@ -1,12 +1,7 @@
 #include "dev_tun.h"
 
 #include <stdio.h>
-
-#include "linux/if_ether.h"
-#include <fcntl.h>      /* open() */
-#include <sys/ioctl.h>  /* ioctl() */
-#include <unistd.h>     /* close() */
-#include <stdlib.h>     /* free() */
+#include <stdlib.h>
 
 #define TUN_MTU 2048
 
@@ -58,6 +53,7 @@ static int tun_recv(struct device *dev) {
     len = read(tun->fd, buf, sizeof(buf));
 
     if(len > 0) {
+        printf("Tun read %d bytes\n", len);
         stack_recv(dev, buf, (size_t) len);
     }
 
@@ -103,8 +99,8 @@ struct device* tun_create(const char *name)
         return NULL;
     }
 
-    tun->dev.send    = tun_send;
-    tun->dev.recv    = tun_recv;
+    tun->dev.send = tun_send;
+    tun->dev.recv = tun_recv;
     tun->dev.destroy = tun_destroy;
     printf("Device %s created\n", tun->dev.name);
     return tun;
