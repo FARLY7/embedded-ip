@@ -1,11 +1,9 @@
-#include "eth.h"
+#include "nano_eth.h"
 #include <string.h>
 
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "frame.h"
 
 static int eth_serialize(struct eth_hdr *eth, uint8_t *buf, size_t len)
 {

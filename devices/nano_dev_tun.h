@@ -1,7 +1,7 @@
-#ifndef DEV_TUN
-#define DEV_TUN
+#ifndef NANO_DEV_TUN
+#define NANO_DEV_TUN
 
-#include "device.h"
+#include "nano_device.h"
 
 
 /**
@@ -9,7 +9,7 @@
  *
  * @param   tun[in] Pointer to Linux TUN device.
  */
-void tun_destroy(struct device *dev);
+void tun_destroy(struct nano_device *dev);
 
 /**
  * @brief   Create a Linux TUN device.
@@ -18,7 +18,7 @@ void tun_destroy(struct device *dev);
  * 
  * @return  Pointer to stack device struct.
  */
-struct device* tun_create(const char *name);
+struct nano_device* tun_create(const char *name);
 
 
 #endif

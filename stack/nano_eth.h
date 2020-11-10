@@ -1,9 +1,8 @@
-#ifndef ETH_H
-#define ETH_H
+#ifndef NANO_ETH_H
+#define NANO_ETH_H
 
 #include <stdint.h>
 #include <stddef.h>
-#include "pbuf.h"
 
 #define ETH_MAX_FRAME_LEN   1600
 
@@ -42,4 +41,4 @@ int eth_input(struct pbuf *p);
 
 int eth_output(struct pbuf *p, const struct eth_addr* src, const struct eth_addr* dst, u16_t eth_type);
 
-#endif
+#endif /* NANO_ETH_H */

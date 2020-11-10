@@ -1,13 +1,13 @@
-#include "dev_tun.h"
+#include "nano_dev_tun.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define TUN_MTU 2048
 
-struct device_tun {
+struct nano_device_tun {
     /* Parent */
-    struct device dev;
+    struct nano_device dev;
     /* Child */
     int fd;
 };
@@ -36,14 +36,14 @@ static int tun_open(char *name) {
     return tapfd;
 }
 
-static int tun_send(struct device *dev, void *buf, size_t len) {
-    struct device_tun *tun = (struct device_tun *) dev;
+static int tun_send(struct nano_device *dev, void *buf, size_t len) {
+    struct nano_device_tun *tun = (struct nano_device_tun *) dev;
 
     return write(tun->fd, buf, len);
 }
 
-static int tun_recv(struct device *dev) {
-    struct device_tun *tun = (struct device_tun *) dev;
+static int tun_recv(struct nano_device *dev) {
+    struct nano_device_tun *tun = (struct nano_device_tun *) dev;
 
     uint8_t buf[TUN_MTU];
     int len;
@@ -54,12 +54,12 @@ static int tun_recv(struct device *dev) {
 
     if(len > 0) {
         printf("Tun read %d bytes\n", len);
-        stack_recv(dev, buf, (size_t) len);
+        nano_stack_recv(dev, buf, (size_t) len);
     }
 
     if(len < 0) {
         printf("Tun read failed\n");
-        tun_destroy((struct device *) tun);
+        tun_destroy((struct nano_device *) tun);
         return 1;
     }
 
@@ -70,7 +70,7 @@ static int tun_recv(struct device *dev) {
 /* ====================    PUBLIC    ==================== */
 /* ====================================================== */
 
-void tun_destroy(struct device *dev) {
+void nano_tun_destroy(struct nano_device *dev) {
     struct device_tun *tun = (struct device_tun *) dev;
 
     if(tun->fd > 0) {
@@ -78,24 +78,24 @@ void tun_destroy(struct device *dev) {
     }
 }
 
-struct device* tun_create(const char *name)
+struct device* nano_tun_create(const char *name)
 {
-    struct device_tun *tun = malloc(sizeof(struct device_tun));
+    struct nano_device_tun *tun = malloc(sizeof(struct nano_device_tun));
 
     if(!tun) {
         return NULL;
     }
 
-    if(device_init((struct device *) tun, name, NULL) != 0) {
+    if(nano_device_init((struct nano_device *) tun, name, NULL) != 0) {
         printf("Tun init failed\n");
-        tun_destroy((struct device *) tun);
+        tun_destroy((struct nano_device *) tun);
         return NULL;
     }
 
     tun->fd = tun_open(name);
     if(tun->fd < 0) {
         printf("Tun creation failed\n");
-        tun_destroy((struct device *) tun);
+        tun_destroy((struct nano_device *) tun);
         return NULL;
     }
 

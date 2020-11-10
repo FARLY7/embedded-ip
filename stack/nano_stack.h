@@ -1,57 +1,33 @@
-#include "stack.h"
+#ifndef NANO_STACK_H
+#define NANO_STACK_H
 
-#include "frame.h"
-
-
+#include <stdint.h>
 
 /*******************************************************************************
  *  DATALINK LAYER
  ******************************************************************************/
 
 /* From dev up to socket */
-int datalink_receive(struct frame *f) {
-
-}
+int nano_datalink_receive(struct nano_frame *f);
 
 /* From socket down to dev */
-int datalink_send(struct frame *f) {
-
-}
-
+int nano_datalink_send(struct nano_frame *f);
 
 /*******************************************************************************
  *  PHYSICAL LAYER
  ******************************************************************************/
 
 /* Enqueues the frame in the device-queue. From socket down to dev */
-int sendto_dev(struct frame *f) {
+int nano_sendto_dev(struct nano_frame *f);
 
-}
-
-static struct frame *stack_recv_new_frame(struct device *dev, uint8_t *buffer, uint32_t len) {
-
-}
-
-int stack_recv(struct device *dev, uint8_t *buffer, uint32_t len) {
+int nano_stack_recv(struct nano_device *dev, uint8_t *buffer, uint32_t len);
 
 
-}
+/* -------- Initialization --------- */
+int nano_stack_init(void);
 
+/* -------- Loop Function ---------- */
+void nano_stack_loop(void);
+void nano_stack_tick(void);
 
-
-void stack_tick() {
-
-}
-
-void stack_loop() {
-
-}
-
-int stack_init() {
-
-#ifdef SUPPORT_ETH
-    protocol_init(&proto_ethernet);
 #endif
-
-
-}

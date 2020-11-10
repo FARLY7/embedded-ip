@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct frame {
+struct nano_frame {
     /* Start of the whole buffer, total frame length */
     uint8_t *buffer;
     size_t   buffer_len;
@@ -21,11 +21,13 @@ struct frame {
     size_t   payload_len;
 
     /* Pointer to the physical device this packet belongs to */
-    //struct device *dev;
+    struct nano_device *dev;
+
+    uint32_t usage_count;
 };
 
-struct frame* frame_alloc(uint8_t *frame, size_t frame_len, uint8_t *hdr, size_t hdr_len, frame_type_t type);
+struct nano_frame *nano_frame_alloc(size_t size);
 
-void frame_free(struct frame *frame);
+void nano_frame_discard(struct nano_frame *frame);
 
 #endif
