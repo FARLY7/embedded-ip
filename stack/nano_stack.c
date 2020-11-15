@@ -1,8 +1,5 @@
 #include "nano_stack.h"
-
 #include "nano_frame.h"
-
-
 
 /*******************************************************************************
  *  DATALINK LAYER
@@ -11,6 +8,11 @@
 /* From dev up to socket */
 int nano_datalink_receive(struct nano_frame *f) {
 
+	/* Ethernet =================================== */
+	/* Ethernet header is beginning of frame */
+	f->datalink_hdr = f->buffer;
+	return eth_receive(f);
+	/* ============================================ */
 }
 
 /* From socket down to dev */
@@ -50,7 +52,8 @@ static struct nano_frame *nano_stack_recv_new_frame(struct device *dev, uint8_t 
     return f;
 }
 
-/** @brief  Frame is received from a device into the stack.
+/**
+ * @brief  Frame is received from a device into the stack.
  */
 int nano_stack_recv(struct nano_device *dev, uint8_t *buffer, uint32_t len)
 {
@@ -59,12 +62,8 @@ int nano_stack_recv(struct nano_device *dev, uint8_t *buffer, uint32_t len)
     if(!f)
         return 1;
 
-    /* Send frame for processing */
-
-    return 0;
+    return nano_datalink_receive(f);
 }
-
-
 
 void nano_stack_tick() {
 
@@ -79,6 +78,5 @@ int nano_stack_init() {
 #ifdef SUPPORT_ETH
     protocol_init(&proto_ethernet);
 #endif
-
 
 }

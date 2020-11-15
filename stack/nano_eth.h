@@ -1,5 +1,7 @@
-#ifndef NANO_ETH_H
+
 #define NANO_ETH_H
+
+#include "nano_frame.h"
 
 #include <stdint.h>
 #include <stddef.h>
@@ -37,8 +39,6 @@ struct eth_hdr {
     uint16_t type;        /**< Ethernet Frame Type */
 };
 
-int eth_input(struct pbuf *p);
-
-int eth_output(struct pbuf *p, const struct eth_addr* src, const struct eth_addr* dst, u16_t eth_type);
+int eth_receive(struct nano_frame *f);
 
 #endif /* NANO_ETH_H */
